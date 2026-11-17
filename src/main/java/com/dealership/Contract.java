@@ -64,4 +64,15 @@ public abstract class Contract {
     public void setMonthlyPayment(BigDecimal monthlyPayment) {
         this.monthlyPayment = monthlyPayment;
     }
+
+    public String toEncodedString() {
+        return "Contract{" +
+                "date='" + date + '\'' +
+                ", name='" + name + '\'' +
+                ", customerEmail='" + customerEmail + '\'' +
+                ", vehicleSold='" + vehicleSold + '\'' +
+                ", totalPrice=" + totalPrice +
+                ", monthlyPayment=" + monthlyPayment +
+                '}';
+    }
 }
