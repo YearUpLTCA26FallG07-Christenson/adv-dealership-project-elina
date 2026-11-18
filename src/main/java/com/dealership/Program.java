@@ -24,5 +24,6 @@ public class Program {
             }
         };
         System.out.println(contract.toEncodedString());
+        ContractDataManager.saveContract(contract);
     }
 }

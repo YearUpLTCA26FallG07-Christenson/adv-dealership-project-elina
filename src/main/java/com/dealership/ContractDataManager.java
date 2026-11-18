@@ -73,10 +73,11 @@ public class ContractDataManager {
 
             // Selects appropriate string format for Sales and Lease contract
             if (c instanceof SalesContract) {
-                System.out.println("SALE" + "|" + c.getDate() + "|" + c.getName() + "|" + c.getCustomerEmail()
-                        + "|");
+                writer.write(((SalesContract) c).toEncodedString());
+            } else if (c instanceof LeaseContract) {
+                writer.write(((LeaseContract) c).toEncodedString());
             }
-            writer.write(c.toString());
+
             writer.close();
         } catch (IOException e) {
             System.out.println("Something went wrong. Please try again.");
