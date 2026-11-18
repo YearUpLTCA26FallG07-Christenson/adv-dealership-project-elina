@@ -11,9 +11,9 @@ public class SalesContract extends Contract {
     // Otherwise they are at 5.25% for 24 months
 
 
-    public SalesContract(String date, String name, String customerEmail, String vehicleSold, BigDecimal totalPrice, BigDecimal monthlyPayment, BigDecimal processingFee, boolean isFinanced, BigDecimal loanPercent) {
-        super(date, name, customerEmail, vehicleSold, totalPrice, monthlyPayment);
-        this.salesTax = BigDecimal.valueOf(0.05); // Sales tax = 5%
+    public SalesContract(String date, String name, String customerEmail, Vehicle vehicleSold, BigDecimal processingFee, boolean isFinanced, BigDecimal loanPercent) {
+        super(date, name, customerEmail, vehicleSold);
+        this.salesTax = BigDecimal.valueOf(5); // Sales tax = 5%
         this.recordingFee = BigDecimal.valueOf(100.00); // Recording fee = $100;
         this.processingFee = processingFee;
         this.isFinanced = isFinanced;
@@ -44,11 +44,11 @@ public class SalesContract extends Contract {
         this.processingFee = processingFee;
     }
 
-    public boolean isWantToFinance() {
+    public boolean isFinanced() {
         return isFinanced;
     }
 
-    public void setWantToFinance(boolean isFinanced) {
+    public void setIsFinanced(boolean isFinanced) {
         this.isFinanced = isFinanced;
     }
 
@@ -70,5 +70,19 @@ public class SalesContract extends Contract {
     @Override
     public BigDecimal getMonthlyPayment() {
         return null;
+    }
+
+    // This method printing contract in .csv file format
+    public String toEncodedString() {
+        //  CONTRACT_TYPE|DATE|CUSTOMER_NAME|CUSTOMER_EMAIL|VIN|YEAR|MAKE|MODEL|
+        //  VEHICLE_TYPE|COLOR|ODOMETER|VEHICLE_PRICE|
+        //  SALES_TAX|RECORDING_FEE|PROCESSING_FEE|TOTAL_PRICE|FINANCE_OPTION|MONTHLY_PAYMENT
+        return "\n" + "SALE" + "|" + getDate() + "|" + getName() + "|" + getCustomerEmail()
+                + "|" + getVehicleSold().getVin() + "|" + getVehicleSold().getYear()
+                + "|" + getVehicleSold().getMake() + "|" + getVehicleSold().getModel()
+                + "|" + getVehicleSold().getVehicleType() + "|" + getVehicleSold().getColor()
+                + "|" + getVehicleSold().getOdometer() + "|" + getVehicleSold().getPrice()
+                + "|" + getSalesTax() + "|" + getRecordingFee() + "|" + getProcessingFee()
+                + "|" + getTotalPrice() + "|" + isFinanced() + "|" + getMonthlyPayment();
     }
 }

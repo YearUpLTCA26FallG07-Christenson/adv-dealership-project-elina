@@ -8,12 +8,14 @@ public class Dealership {
     private String address;
     private String phone;
     private ArrayList<Vehicle> inventory;
+    private ArrayList<Contract> contracts;
 
     public Dealership(String name, String address, String phone) {
         this.name = name;
         this.address = address;
         this.phone = phone;
         this.inventory = new ArrayList<>();
+        this.contracts = new ArrayList<>();
     }
 
     public String getName() {
@@ -139,8 +141,8 @@ public class Dealership {
                 '}';
     }
 
-    // formats dealership to save in inventory.csv file
-    public String toEncodedString() {
+    // formats inventory to save in inventory.csv file
+    public String vehicleToEncodedString() {
         StringBuilder result = new StringBuilder();
         result.append(name + "|" + address + "|" + phone);
 
@@ -149,5 +151,18 @@ public class Dealership {
         }
 
         return result.toString();
+    }
+
+    // formats contract to save in contracts.csv file
+    public String contracToEncodedString() {
+        for (Contract c : contracts) {
+
+        }
+
+        return null;
+    }
+
+    public ArrayList<Contract> getAllContracts() {
+        return contracts;
     }
 }

@@ -69,7 +69,7 @@ public class DealershipFileManager {
         try {
             String fileName = "inventory.csv";
             FileWriter writer = new FileWriter(fileName, false);
-            writer.write(d.toEncodedString());
+            writer.write(d.vehicleToEncodedString());
             writer.close();
         } catch (IOException e) {
             System.out.println("Something went wrong. Please try again.");
