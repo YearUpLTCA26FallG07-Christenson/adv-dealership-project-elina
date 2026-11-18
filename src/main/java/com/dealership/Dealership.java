@@ -127,8 +127,8 @@ public class Dealership {
         }
     }
 
-    public void removeVehicle(int vin) {
-        inventory.removeIf(v -> v.getVin() == vin);
+    public boolean removeVehicle(int vin) {
+        return inventory.removeIf(v -> v.getVin() == vin);
     }
 
     @Override

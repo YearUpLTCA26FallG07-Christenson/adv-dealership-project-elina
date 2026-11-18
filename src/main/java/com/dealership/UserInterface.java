@@ -38,7 +38,9 @@ public class UserInterface {
                    [7]  View all vehicles
                    [8]  Add a vehicle
                    [9]  Remove a vehicle
-                   [10] Quit
+                   [10] Lease a vehicle
+                   [11] Buy a vehicle
+                   [0]  Quit
                    
                    › Select an option [1-10]: """);
 
@@ -52,10 +54,12 @@ public class UserInterface {
                 case 7 -> processGetAllVehiclesRequest();
                 case 8 -> processAddVehicleRequest();
                 case 9 -> processRemoveVehicleRequest();
-                case 10 -> System.out.println("\nHave a good day!");
+                case 10 -> processBuyVehicle();
+                case 11 -> processLeaseVehicle();
+                case 0 -> System.out.println("\nHave a good day!");
                 default -> System.out.println("\nInvalid command, please try again.");
             }
-        } while (selectedOption != 10);
+        } while (selectedOption != 0);
     }
 
     // helper method – displays list and can be called from all search
@@ -168,19 +172,47 @@ public class UserInterface {
     }
 
     public void processRemoveVehicleRequest() {
-        // user input
+        // User input
         int vin = Console.promptForInt("\nEnter VIN of vehicle to remove: ");
+
+        // Remove from inventory
+        boolean isFound = dealership.removeVehicle(vin);
+
+        // Prints a message and saves file based on whether match was found
+        if (isFound) {
+            // Save file
+            DealershipFileManager.saveDealership(dealership);
+
+            System.out.println("✓ Vehicle is successfully removed from inventory.");
+        } else {
+            System.out.println("This vehicle doesn't exist.");
+        }
+    }
+
+    private void processLeaseVehicle() {
+        // Get user input - vin
+        int vin = Console.promptForInt("\nEnter VIN of vehicle you want to lease: ");
+
+        // Get date
+        String date = String.valueOf(LocalDate.now().getDayOfYear());
+
+        // Get user input - name
+//        String name = Co
+
 
         // remove from inventory
         dealership.removeVehicle(vin);
 
-        // save file
+        // save inventory.csv file
         DealershipFileManager.saveDealership(dealership);
 
         // success message
         System.out.println("\n✓ Vehicle is successfully removed from inventory.");
-
     }
+
+    private void processBuyVehicle() {
+    }
+
 
     public int promptForVin() {
         int vin = 0;
