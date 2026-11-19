@@ -1,5 +1,6 @@
 package com.dealership;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -15,34 +16,34 @@ public class UserInterface {
         this.dealership = DealershipFileManager.getDealership();
     }
 
-    public void display() throws InterruptedException {
+    public void display() throws InterruptedException, IOException {
         init();
         int selectedOption;
         printLineSlowly("Welcome to D & B car dealership!", 50);
 
         do {
             printLineSlowly("\n• loading...", 50);
-            Thread.sleep(1000);
+            Thread.sleep(800);
             System.out.println("""
                     \n---------------------------------------
                                  ⟨ MAIN MENU ⟩
                     ---------------------------------------""");
-            Thread.sleep(1000);
+            Thread.sleep(800);
             selectedOption = Console.promptForInt("""
-                   [1]  Find vehicles within a price range
-                   [2]  Find vehicles by make / model
-                   [3]  Find vehicles by year range
-                   [4]  Find vehicles by color
-                   [5]  Find vehicles by mileage range
-                   [6]  Find vehicles by type
-                   [7]  View all vehicles
-                   [8]  Add a vehicle
-                   [9]  Remove a vehicle
-                   [10] Lease a vehicle
-                   [11] Buy a vehicle
-                   [0]  Quit
-                   
-                   › Select an option [1-10]: """);
+                    [1]  Find vehicles within a price range
+                    [2]  Find vehicles by make / model
+                    [3]  Find vehicles by year range
+                    [4]  Find vehicles by color
+                    [5]  Find vehicles by mileage range
+                    [6]  Find vehicles by type
+                    [7]  View all vehicles
+                    [8]  Add a vehicle
+                    [9]  Remove a vehicle
+                    [10] Lease a vehicle
+                    [11] Buy a vehicle
+                    [0]  Quit
+                    
+                    › Select an option [0-11]: """);
 
             switch (selectedOption) {
                 case 1 -> processGetByPriceRequest();
@@ -54,16 +55,15 @@ public class UserInterface {
                 case 7 -> processGetAllVehiclesRequest();
                 case 8 -> processAddVehicleRequest();
                 case 9 -> processRemoveVehicleRequest();
-                case 10 -> processBuyVehicle();
-                case 11 -> processLeaseVehicle();
+                case 10 -> processLeaseVehicle();
+                case 11 -> processBuyVehicle();
                 case 0 -> System.out.println("\nHave a good day!");
                 default -> System.out.println("\nInvalid command, please try again.");
             }
         } while (selectedOption != 0);
     }
 
-    // helper method – displays list and can be called from all search
-    // and get vehicles type of methods
+    // Helper method – displays all vehicles from selected list
     private void displayVehicles(ArrayList<Vehicle> selectedVehicles) {
 
         System.out.println("""
@@ -79,8 +79,8 @@ public class UserInterface {
     public void processGetByPriceRequest() {
 
         // user input
-        BigDecimal min = Console.promptForBigDecimal("Enter minimum price range (press Enter↵ to skip): ");
-        BigDecimal max = Console.promptForBigDecimal("Enter maximum price range (press Enter↵ to skip): ");
+        BigDecimal min = Console.promptForBigDecimal("› Enter minimum price range (press Enter↵ to skip): ");
+        BigDecimal max = Console.promptForBigDecimal("› Enter maximum price range (press Enter↵ to skip): ");
 
         ArrayList<Vehicle> result = dealership.getVehiclesByPrice(min, max);
         displayVehicles(result);
@@ -91,9 +91,9 @@ public class UserInterface {
         // user input
         String make;
         do {
-            make = Console.promptForString("Enter make: ").trim().toLowerCase();
+            make = Console.promptForString("› Enter make: ").trim().toLowerCase();
         } while (make.isEmpty());
-        String model = Console.promptForString("Enter model (press Enter↵ to skip): ").trim().toLowerCase();
+        String model = Console.promptForString("› Enter model (press Enter↵ to skip): ").trim().toLowerCase();
 
         ArrayList<Vehicle> result = dealership.getVehiclesByMakeModel(make, model);
         displayVehicles(result);
@@ -104,8 +104,8 @@ public class UserInterface {
         // user input
         int min;
         int max;
-        min = Console.promptForInt("Enter start of year range (press Enter↵ to skip): ");
-        max = Console.promptForInt("Enter end of year range (press Enter↵ to skip): ");
+        min = Console.promptForInt("› Enter start of year range (press Enter↵ to skip): ");
+        max = Console.promptForInt("› Enter end of year range (press Enter↵ to skip): ");
 
         ArrayList<Vehicle> result = dealership.getVehiclesByYear(min, max);
         displayVehicles(result);
@@ -114,7 +114,7 @@ public class UserInterface {
     public void processGetByColorRequest() {
 
         // user input
-        String color = Console.promptForString("Enter color: ").trim().toLowerCase();
+        String color = Console.promptForString("› Enter color: ").trim().toLowerCase();
 
         ArrayList<Vehicle> result = dealership.getVehiclesByColor(color);
         displayVehicles(result);
@@ -125,8 +125,8 @@ public class UserInterface {
         // user input
         int min;
         int max;
-        min = Console.promptForInt("Enter minimum mileage (press Enter↵ to skip): ");
-        max = Console.promptForInt("Enter maximum mileage (press Enter↵ to skip): ");
+        min = Console.promptForInt("› Enter minimum mileage (press Enter↵ to skip): ");
+        max = Console.promptForInt("› Enter maximum mileage (press Enter↵ to skip): ");
 
         ArrayList<Vehicle> result = dealership.getVehiclesByMileage(min, max);
         displayVehicles(result);
@@ -135,7 +135,7 @@ public class UserInterface {
     public void processGetByVehicleTypeRequest() {
 
         // user input
-        String vehicleType = Console.promptForString("Enter type (car/SUV/coupe/truck/sedan/van): ").trim().toLowerCase();
+        String vehicleType = Console.promptForString("› Enter type (car/SUV/coupe/truck/sedan/van): ").trim().toLowerCase();
 
         ArrayList<Vehicle> result = dealership.getVehiclesByType(vehicleType);
         displayVehicles(result);
@@ -149,14 +149,14 @@ public class UserInterface {
     public void processAddVehicleRequest() {
 
         // user input
-        int vin = promptForVin();
-        int year = promptForYear();
-        String make = promptForMake();
-        String model = promptForModel();
-        String vehicleType = promptForVehicleType();
-        String color = promptForColor();
-        int odometer = promptForOdometer();
-        BigDecimal price = promptForPrice();
+        int vin = processPromptForInt("› Enter VIN (vehicle identification number): ");
+        int year = processPromptForYear();
+        String make = processPromptForString("› Enter vehicle make: ");
+        String model = processPromptForString("› Enter vehicle model: ");
+        String vehicleType = processPromptForString("› Enter vehicle type: ");
+        String color = processPromptForString("› Enter vehicle color: ");
+        int odometer = processPromptForOdometer();
+        BigDecimal price = processPromptForPrice();
 
         // create new vehicle
         Vehicle v = new Vehicle(vin, year, make, model, vehicleType, color, odometer, price);
@@ -173,16 +173,14 @@ public class UserInterface {
 
     public void processRemoveVehicleRequest() {
         // User input
-        int vin = Console.promptForInt("\nEnter VIN of vehicle to remove: ");
+        int vin = Console.promptForInt("\n› Enter VIN of vehicle to remove: ");
 
         // Remove from inventory
         boolean isFound = dealership.removeVehicle(vin);
 
         // Prints a message and saves file based on whether match was found
         if (isFound) {
-            // Save file
-            DealershipFileManager.saveDealership(dealership);
-
+            DealershipFileManager.saveDealership(dealership); // Save file
             System.out.println("✓ Vehicle is successfully removed from inventory.");
         } else {
             System.out.println("This vehicle doesn't exist.");
@@ -190,15 +188,18 @@ public class UserInterface {
     }
 
     private void processLeaseVehicle() {
-        // Get user input - vin
-        int vin = Console.promptForInt("\nEnter VIN of vehicle you want to lease: ");
+        // Get user input
+        int vin = processPromptForInt("› Enter VIN (vehicle identification number): ");
 
-        // Get date
-        String date = String.valueOf(LocalDate.now().getDayOfYear());
+        // Check inventory for vehicle with entered vin
+        Vehicle foundVehicle = dealership.getVehicleByVin(vin);
 
-        // Get user input - name
-//        String name = Co
-
+        if (foundVehicle != null) {
+            String date = String.valueOf(LocalDate.now().getDayOfYear());
+            String name = processPromptForString("› Enter your name: ");
+            String email = processPromptForString("› Enter your email: ");
+            boolean isFinanced = processPromptForFinancing(); // Do you want to finance a purchase?
+        }
 
         // remove from inventory
         dealership.removeVehicle(vin);
@@ -210,86 +211,115 @@ public class UserInterface {
         System.out.println("\n✓ Vehicle is successfully removed from inventory.");
     }
 
-    private void processBuyVehicle() {
+    private void processBuyVehicle() throws InterruptedException, IOException {
+        Vehicle foundVehicle;
+        int vin;
+        do { // Prompt for vin until vehicle is found
+            vin = processPromptForInt("› Enter VIN (vehicle identification number): "); // Get user input
+            foundVehicle = dealership.getVehicleByVin(vin); // Check inventory for vehicle with entered vin
+
+            if (foundVehicle == null) {
+                vin = processPromptForInt("""
+                    \nVehicle not found.
+                    › Try again: """);
+            }
+        } while (foundVehicle == null);
+        String date = String.valueOf(LocalDate.now().getDayOfYear());
+        String name = processPromptForString("› Enter your name: ");
+        String email = processPromptForString("› Enter your email: ");
+        boolean isFinanced = processPromptForFinancing(); // Do you want to finance a purchase?
+
+        // Create sales contract
+        SalesContract contract = new SalesContract(date, name, email, foundVehicle, isFinanced);
+
+        // Display contract and confirm
+        System.out.println("\n and sign your purchase contract: ");
+        printLineSlowly("\n• loading...", 100);
+        System.out.println(contract);
+        Thread.sleep(800);
+
+        int selectedOption;
+        do {
+            selectedOption = Console.promptForInt("""
+                    \n[1] Confirm and sign
+                    [2] Cancel
+                    
+                    › Select an option [1-2]: """);
+            switch (selectedOption) {
+                case 1 -> {
+                    dealership.removeVehicle(vin); // Remove found vehicle from inventory
+                    DealershipFileManager.saveDealership(dealership); // Save inventory.csv file
+                    dealership.addContract(contract); // Add contract to contracts array list
+                    ContractDataManager.saveContract(contract); // Save contract to contracts.csv file
+                    System.out.println("\n✓ Vehicle is yours!");
+                    return;
+                }
+                case 2 -> {} // Return to main menu
+                default -> System.out.println("\nInvalid command, please try again.");
+            }
+        } while(selectedOption != 2);
     }
 
-
-    public int promptForVin() {
-        int vin = 0;
-        vin = Console.promptForInt("\nEnter VIN (vehicle identification number): ");
+    public int processPromptForInt(String prompt) {
+        int vin = Console.promptForInt(prompt);
         while (vin == 0) {
-            vin = Console.promptForInt("Field cannot be empty. Enter VIN: ");
+            vin = Console.promptForInt("""
+                    \nField cannot be empty.
+                    › Try again: """);
         }
         return vin;
     }
 
-    public int promptForYear() {
+    public int processPromptForYear() {
         int year = 0;
         LocalDate today = LocalDate.now();
         int currentYear = today.getYear();
-        year = Console.promptForInt("Enter model year: ");
+        year = Console.promptForInt("› Enter model year: ");
         while (year < 1900 || year > currentYear) {
-            year = Console.promptForInt("Model year should be between 1900 - " + currentYear + ". Enter model year: ");
+            year = Console.promptForInt("""
+                    \nModel year should be between 1900 - """ + currentYear +
+                    """
+                            › Try again: """);
         }
         return year;
     }
 
-    public String promptForMake() {
-        String make = "";
-        make = Console.promptForString("Enter make: ");
-        while (make.isEmpty()) {
-            make = Console.promptForString("Field cannot be empty. Enter make: ");
-        }
-        return make;
-    }
-
-    public String promptForModel() {
-        String model = "";
-        model = Console.promptForString("Enter model: ");
-        while (model.isEmpty()) {
-            model = Console.promptForString("Field cannot be empty. Enter model: ");
-        }
-        return model;
-    }
-
-    public String promptForVehicleType() {
-        String vehicleType = "";
-        vehicleType = Console.promptForString("Enter vehicle type: ");
-        while (vehicleType.isEmpty()) {
-            vehicleType = Console.promptForString("Field cannot be empty. Enter vehicle type: ");
-        }
-        return vehicleType;
-    }
-
-    public String promptForColor() {
-        String color = "";
-        color = Console.promptForString("Enter color: ");
-        while (color.isEmpty()) {
-            color = Console.promptForString("Field cannot be empty. Enter color: ");
-        }
-        return color;
-    }
-
-    public int promptForOdometer() {
+    public int processPromptForOdometer() {
         int odometer = 0;
-        odometer = Console.promptForInt("Enter mileage: ");
-        while (odometer == 0) {
-            odometer = Console.promptForInt("Field cannot be empty. Enter mileage: ");
+        odometer = Console.promptForInt("› Enter mileage: ");
+        while (odometer < 0) {
+            odometer = Console.promptForInt("""
+                    \nField cannot be empty.
+                    › Enter mileage: """);
         }
         return odometer;
     }
 
-    public BigDecimal promptForPrice() {
+    public BigDecimal processPromptForPrice() {
         BigDecimal price = BigDecimal.ZERO;
-        price = Console.promptForBigDecimal("Enter price: ");
+        price = Console.promptForBigDecimal("› Enter price: ");
         while (price.compareTo(BigDecimal.ZERO) == 0) {
-            price = Console.promptForBigDecimal("Field cannot be empty. Enter price: ");
+            price = Console.promptForBigDecimal("""
+                    \nField cannot be empty.
+                    › Try again: """);
         }
-
         price = price.setScale(2, RoundingMode.HALF_UP);
         return price;
     }
 
+    // Prompts user for string values
+    public String processPromptForString(String prompt) {
+        String input = "";
+        input = Console.promptForString(prompt);
+        while (input.isEmpty()) {
+            input = Console.promptForString("""
+                    \nField cannot be empty.
+                    › Try again: """);
+        }
+        return input;
+    }
+
+    // Prints text letter by letter
     public static void printLineSlowly(String text, int delay) {
         for (int i = 0; i < text.length(); i++) {
             System.out.print(text.charAt(i));
@@ -302,5 +332,29 @@ public class UserInterface {
             }
         }
         System.out.println();
+    }
+
+    // Prompts user for yes/no to get isFinanced for SalesContract
+    public boolean processPromptForFinancing() {
+        boolean isFinanced = false;
+        int financing;
+        do {
+            financing = processPromptForInt("""
+                    \nWe are offering financing:
+                    * 4.25% interest for 48 months if the price is $10,000 or more;
+                    * 5.25% interest for 24 months if the price is over $10,000)
+                    
+                    Do you want to finance your purchase?
+                    [1] yes
+                    [2] no
+                    
+                    › Select an option [1-2]: """);
+            switch (financing) {
+                case 1 -> isFinanced = true;
+                case 2 -> isFinanced = false;
+                default -> System.out.println("› Enter [1] or [2]: ");
+            }
+        } while ((financing != 1) && (financing != 2));
+        return isFinanced;
     }
 }

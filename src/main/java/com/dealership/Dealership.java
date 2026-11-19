@@ -131,14 +131,15 @@ public class Dealership {
         return inventory.removeIf(v -> v.getVin() == vin);
     }
 
-    @Override
-    public String toString() {
-        return "Dealership{" +
-                "name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                ", phone='" + phone + '\'' +
-                "\ninventory=" + inventory +
-                '}';
+    // Find vehicle from inventory if vin matches
+    public Vehicle getVehicleByVin(int vin) {
+        // if vin matches – return
+        for (Vehicle v : inventory) {
+            if (vin == v.getVin()) {
+                return v;
+            }
+        }
+        return null;
     }
 
     // formats inventory to save in inventory.csv file
@@ -153,13 +154,10 @@ public class Dealership {
         return result.toString();
     }
 
-    // formats contract to save in contracts.csv file
-    public String contracToEncodedString() {
-        for (Contract c : contracts) {
-
+    public void addContract(Contract c) {
+        if (c != null && !inventory.contains(c)) {
+            contracts.add(c);
         }
-
-        return null;
     }
 
     public ArrayList<Contract> getAllContracts() {

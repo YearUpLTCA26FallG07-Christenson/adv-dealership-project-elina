@@ -15,23 +15,18 @@ public class Console {
 
     public static int promptForInt(String prompt) {
         String input = "";
+        while (true) {
+            System.out.print(prompt);
+            input = scanner.nextLine().trim();
 
-        while(true) {
-            try{
-                System.out.print(prompt);
-                input = scanner.nextLine().trim();
-
-                // if input is not empty convert to integer
-                if (!input.isEmpty()) {
-                    return Integer.parseInt(input);
-
-                    // if empty leave blank
-                } else {
-                    return 0;
-                }
+            // if input is not empty convert to integer
+            if (input.isEmpty()) { // If input empty
+                return 0;
+            }
+            try {
+                return Integer.parseInt(input);
             } catch (NumberFormatException e) {
                 System.out.println("\nInvalid input. Please enter a valid whole number.");
-                scanner.nextLine(); // Clear the bad input from the scanner buffer
             } catch (Exception e) {
                 System.out.println("\nSomething went wrong. Please try again.");
             }
@@ -49,8 +44,10 @@ public class Console {
                 scanner.nextLine(); // Consume the newline
                 isValid = true;     // Input was successful, exit loop
             } catch (InputMismatchException e) {
-                System.out.println("\nInvalid input. Please enter a valid number.");
                 scanner.nextLine(); // Clear the bad input from the scanner buffer
+                System.out.println("""
+                        \nInvalid input. Please enter a valid number.
+                        › Try again: """);
             }
         } while (!isValid);
 
@@ -60,7 +57,7 @@ public class Console {
     public static BigDecimal promptForBigDecimal(String prompt) {
         String input = "";
 
-        while(true) {
+        while (true) {
             try {
                 System.out.print(prompt);
                 input = scanner.nextLine().trim();
@@ -79,8 +76,10 @@ public class Console {
                     return BigDecimal.ZERO;
                 }
             } catch (InputMismatchException e) {
-                System.out.println("\nInvalid input. Please enter a valid number.");
                 scanner.nextLine(); // Clear the newline from the scanner buffer
+                System.out.println("""
+                        \nInvalid input. Please enter a valid number.
+                        › Try again: """);
             }
         }
     }

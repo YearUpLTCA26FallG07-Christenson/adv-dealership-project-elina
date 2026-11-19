@@ -16,8 +16,6 @@ public abstract class Contract {
         this.name = name;
         this.customerEmail = customerEmail;
         this.vehicleSold = vehicleSold;
-        this.totalPrice = getTotalPrice();
-        this.monthlyPayment = getMonthlyPayment();
     }
 
     public String getDate() {
