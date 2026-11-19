@@ -17,10 +17,10 @@ public class ContractDataManager {
             } else if (c instanceof LeaseContract) {
                 writer.write(((LeaseContract) c).toEncodedString());
             }
-            writer.close();
         } catch (IOException e) {
             System.out.println("Something went wrong. Please try again.");
         } finally {
+            assert writer != null;
             writer.close();
         }
     }

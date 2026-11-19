@@ -220,8 +220,8 @@ public class UserInterface {
 
             if (foundVehicle == null) {
                 vin = processPromptForInt("""
-                    \nVehicle not found.
-                    › Try again: """);
+                        \nVehicle not found.
+                        › Try again: """);
             }
         } while (foundVehicle == null);
         String date = String.valueOf(LocalDate.now().getDayOfYear());
@@ -232,32 +232,7 @@ public class UserInterface {
         // Create sales contract
         SalesContract contract = new SalesContract(date, name, email, foundVehicle, isFinanced);
 
-        // Display contract and confirm
-        System.out.println("\n and sign your purchase contract: ");
-        printLineSlowly("\n• loading...", 100);
-        System.out.println(contract);
-        Thread.sleep(800);
-
-        int selectedOption;
-        do {
-            selectedOption = Console.promptForInt("""
-                    \n[1] Confirm and sign
-                    [2] Cancel
-                    
-                    › Select an option [1-2]: """);
-            switch (selectedOption) {
-                case 1 -> {
-                    dealership.removeVehicle(vin); // Remove found vehicle from inventory
-                    DealershipFileManager.saveDealership(dealership); // Save inventory.csv file
-                    dealership.addContract(contract); // Add contract to contracts array list
-                    ContractDataManager.saveContract(contract); // Save contract to contracts.csv file
-                    System.out.println("\n✓ Vehicle is yours!");
-                    return;
-                }
-                case 2 -> {} // Return to main menu
-                default -> System.out.println("\nInvalid command, please try again.");
-            }
-        } while(selectedOption != 2);
+        confirmContract(dealership, contract, vin);
     }
 
     public int processPromptForInt(String prompt) {
@@ -356,5 +331,38 @@ public class UserInterface {
             }
         } while ((financing != 1) && (financing != 2));
         return isFinanced;
+    }
+
+    // Displays contract info and prompts to confirm or cancel
+    public static void confirmContract(Dealership d, Contract c, int vin) {
+        try {
+            // Display contract and confirm
+            System.out.println("\nReview and sign your purchase contract: ");
+            printLineSlowly("\n• loading...", 100);
+            System.out.println(c);
+            Thread.sleep(800);
+
+            int selectedOption;
+            do {
+                selectedOption = Console.promptForInt("""
+                        \n[1] Confirm and sign
+                        [2] Cancel
+                        
+                        › Select an option [1-2]: """);
+                switch (selectedOption) {
+                    case 1 -> {
+                        d.removeVehicle(vin); // Remove found vehicle from inventory
+                        DealershipFileManager.saveDealership(d); // Save inventory.csv file
+                        d.addContract(c); // Add contract to contracts array list
+                        ContractDataManager.saveContract(c); // Save contract to contracts.csv file
+                        System.out.println("\n✓ Vehicle is yours!");
+                    }
+                    case 2 -> {} // Return to main menu
+                    default -> System.out.println("\nInvalid command, please try again.");
+                }
+            } while ((selectedOption != 1) || (selectedOption != 2));
+        } catch (Exception e) {
+            System.out.println("Something went wrong. Please try again.");
+        }
     }
 }

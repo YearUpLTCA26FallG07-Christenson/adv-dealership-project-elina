@@ -155,7 +155,7 @@ public class Dealership {
     }
 
     public void addContract(Contract c) {
-        if (c != null && !inventory.contains(c)) {
+        if (c != null && !contracts.contains(c)) {
             contracts.add(c);
         }
     }
