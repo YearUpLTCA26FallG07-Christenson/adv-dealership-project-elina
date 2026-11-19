@@ -1,19 +1,21 @@
 package com.dealership;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class LeaseContract extends Contract {
     private BigDecimal expectedEndingValue; // 50% of the original price
     private BigDecimal leaseFee; // 7% of the original price
     private BigDecimal leasePercent; // 4.0% percent
-    private int duration = 36; // 36 months
 
-    public LeaseContract(String date, String name, String customerEmail, Vehicle vehicleSold, BigDecimal totalPrice, BigDecimal monthlyPayment, BigDecimal expectedEndingValue, BigDecimal leaseFee, BigDecimal leasePercent, int duration) {
+    public LeaseContract(String date, String name, String customerEmail, Vehicle vehicleSold) {
         super(date, name, customerEmail, vehicleSold);
-        this.expectedEndingValue = expectedEndingValue;
-        this.leaseFee = leaseFee;
-        this.leasePercent = leasePercent;
-        this.duration = duration;
+        this.expectedEndingValue = vehicleSold.getPrice() // 50% of the original price
+                .divide(BigDecimal.valueOf(2.00))
+                .setScale(2, RoundingMode.HALF_UP);
+        this.leaseFee = vehicleSold.getPrice()
+                .multiply(BigDecimal.valueOf(0.07)); // 7% of the original price
+        this.leasePercent = BigDecimal.valueOf(0.04); // All leases are financed at 4.0% for 36 months
     }
 
     public BigDecimal getExpectedEndingValue() {
@@ -40,25 +42,19 @@ public class LeaseContract extends Contract {
         this.leasePercent = leasePercent;
     }
 
-    public int getDuration() {
-        return duration;
-    }
-
-    public void setDuration(int duration) {
-        this.duration = duration;
-    }
-
     @Override
     public BigDecimal getTotalPrice() {
-        // Total price of a lease = Expected Ending Value + Lease Fee.
-        return null;
+        // Total price of a lease = Expected Ending Value + Lease Fee
+        return getExpectedEndingValue()
+                .add(getLeaseFee());
     }
 
     @Override
     public BigDecimal getMonthlyPayment() {
-        // Monthly payment based on
-        //• All leases are financed at 4.0% for 36 months
-        return null;
+        // Interest = base price * lease percent * years
+        return leasePercent
+                .multiply(BigDecimal.valueOf(3)) // All leases are financed at 4.0% for 36 months = 3 years
+                .add(getVehicleSold().getPrice());
     }
 
     // This method printing contract in .csv file format

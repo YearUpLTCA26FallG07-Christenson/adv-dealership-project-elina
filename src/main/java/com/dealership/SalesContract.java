@@ -124,6 +124,7 @@ public class SalesContract extends Contract {
                 "\nProcessing fee: " + getProcessingFee() +
                 "\nTotal price: " + getTotalPrice();
     }
+
     // This method printing contract in .csv file format
     public String toEncodedString() {
         //  CONTRACT_TYPE|DATE|CUSTOMER_NAME|CUSTOMER_EMAIL|VIN|YEAR|MAKE|MODEL|
