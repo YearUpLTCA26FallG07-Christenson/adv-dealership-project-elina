@@ -51,10 +51,12 @@ public class LeaseContract extends Contract {
 
     @Override
     public BigDecimal getMonthlyPayment() {
-        // Interest = base price * lease percent * years
+        // Monthly payment = (lease percent * total price * years + total price) / 36
         return leasePercent
+                .multiply(getVehicleSold().getPrice())
                 .multiply(BigDecimal.valueOf(3)) // All leases are financed at 4.0% for 36 months = 3 years
-                .add(getVehicleSold().getPrice());
+        .add (getVehicleSold().getPrice())
+                .divide(BigDecimal.valueOf(36));
     }
 
     // This method printing contract in .csv file format
