@@ -21,8 +21,10 @@ public class SalesContract extends Contract {
             processingFee = BigDecimal.valueOf(495.00).setScale(2, RoundingMode.HALF_UP); // $495 for all others
         }
         this.isFinanced = isFinanced;
-        if (vehicleSold.getPrice().compareTo(BigDecimal.valueOf(10000.00)) < 0) { // if the price under $10,000 – 5.25%
-            loanPercent = BigDecimal.valueOf(5.25);
+        if (!isFinanced) {
+            loanPercent = BigDecimal.ZERO;
+        } else if (vehicleSold.getPrice().compareTo(BigDecimal.valueOf(10000.00)) < 0) { // if the price under $10,000 – 5.25%
+                loanPercent = BigDecimal.valueOf(5.25);
         } else { // if the price over $10,000 – 5.25%
             loanPercent = BigDecimal.valueOf(4.25);
         }
@@ -80,7 +82,6 @@ public class SalesContract extends Contract {
         } else {
             term = BigDecimal.valueOf(4.00); // if price over or equal $10,000: financing for 48 months = 4 years
         }
-
         BigDecimal tax = vehiclePrice
                 .multiply(salesTax)
                 .divide(BigDecimal.valueOf(100.00));
@@ -100,32 +101,42 @@ public class SalesContract extends Contract {
     @Override
     public BigDecimal getMonthlyPayment() {
         BigDecimal vehiclePrice = getVehicleSold().getPrice(); // Base vehicle price
-        if (isFinanced == false) { // If customer selected no financing there are no monthly payments
-            return BigDecimal.ZERO;
+        if (!isFinanced) { // If customer selected no financing there are no monthly payments
+            return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
         } else {
             if (vehiclePrice.compareTo(BigDecimal.valueOf(10000.00)) < 0) { // If price under $10,000
-                return getTotalPrice().divide(BigDecimal.valueOf(24.00)); // Divide total price by 24 months
+                return getTotalPrice().divide(BigDecimal.valueOf(24.00)).setScale(2, RoundingMode.HALF_UP); // Divide total price by 24 months
             } else { // If price over $10,000
                 return getTotalPrice().divide(BigDecimal.valueOf(48.00)).setScale(2, RoundingMode.HALF_UP); // Divide total price by 48 months
             }
         }
     }
 
-    // Display contract info to customer
+    @Override // Display contract info to customer
     public String toString() {
-        return "\nSales contract" +
+        StringBuilder contract = new StringBuilder("\nSales contract" +
                 "\nVehicle: " + getVehicleSold().getYear()
                 + "|" + getVehicleSold().getMake() + "|" + getVehicleSold().getModel()
                 + "|" + getVehicleSold().getVehicleType() + "|" + getVehicleSold().getColor()
                 + "|" + getVehicleSold().getOdometer() + " miles " +
-                "\nBase price: " + getVehicleSold().getPrice() +
-                "\nSales tax: " + getSalesTax() + "%" +
-                "\nRecording fee: " + getRecordingFee() +
-                "\nProcessing fee: " + getProcessingFee() +
-                "\nTotal price: " + getTotalPrice();
+                "\nBase price: $" + getVehicleSold().getPrice() +
+                "\nSales tax (" + getSalesTax() + "%): $" + getVehicleSold().getPrice().multiply(salesTax).divide(BigDecimal.valueOf(100.00)) +
+                "\nRecording fee: $" + getRecordingFee() +
+                "\nProcessing fee: $" + getProcessingFee() +
+                "\n-----------------------------------------------------------------" +
+                "\nTotal price: $" + getTotalPrice());
+        if(isFinanced){
+            contract.append("\nYou will pay: $" + getMonthlyPayment() + "/month for ");
+            if (getVehicleSold().getPrice().compareTo(BigDecimal.valueOf(10000.00)) < 0) {
+                contract.append("24 months");
+            } else {
+                contract.append("48 months");
+            }
+        }
+        return contract.toString();
     }
 
-    // This method printing contract in .csv file format
+    // This method formats contract values for .csv file format
     public String toEncodedString() {
         //  CONTRACT_TYPE|DATE|CUSTOMER_NAME|CUSTOMER_EMAIL|VIN|YEAR|MAKE|MODEL|
         //  VEHICLE_TYPE|COLOR|ODOMETER|VEHICLE_PRICE|
@@ -136,13 +147,9 @@ public class SalesContract extends Contract {
         } else {
             financed = "NO";
         }
-
-        BigDecimal vehiclePrice = getVehicleSold().getPrice(); // Base vehicle price
-
-        BigDecimal tax = vehiclePrice
+        BigDecimal tax = getVehicleSold().getPrice() // Base vehicle price
                 .multiply(salesTax)
                 .divide(BigDecimal.valueOf(100.00));
-
         return "\n" + "SALE" + "|" + getDate() + "|" + getName() + "|" + getCustomerEmail()
                 + "|" + getVehicleSold().getVin() + "|" + getVehicleSold().getYear()
                 + "|" + getVehicleSold().getMake() + "|" + getVehicleSold().getModel()

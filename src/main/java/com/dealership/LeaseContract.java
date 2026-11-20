@@ -59,9 +59,25 @@ public class LeaseContract extends Contract {
                 .divide(BigDecimal.valueOf(36));
     }
 
+
+    @Override // Display contract info to customer
+    public String toString() {
+        return "\nSales contract" +
+                "\nVehicle: " + getVehicleSold().getYear()
+                + "|" + getVehicleSold().getMake() + "|" + getVehicleSold().getModel()
+                + "|" + getVehicleSold().getVehicleType() + "|" + getVehicleSold().getColor()
+                + "|" + getVehicleSold().getOdometer() + " miles " +
+                "\nBase price: $" + getVehicleSold().getPrice() +
+                "\nResidual price after paying off: $" + getExpectedEndingValue() +
+                "\nLease fee: $" + getLeaseFee() +
+                "\nLease percent: " + getLeasePercent() + "%" +
+                "\n-----------------------------------------------------------------" +
+                "\nTotal price: " + getTotalPrice() +
+                "\nYou will pay: $" + getMonthlyPayment() + "/month for 36 months";
+    }
+
     // This method printing contract in .csv file format
     public String toEncodedString() {
-        // LEASE:
         // CONTRACT_TYPE|DATE|CUSTOMER_NAME|CUSTOMER_EMAIL|VIN|YEAR|MAKE|MODEL|
         //  VEHICLE_TYPE|COLOR|ODOMETER|VEHICLE_PRICE|
         //  EXPECTED_ENDING_VALUE|LEASE_FEE|TOTAL_PRICE|MONTHLY_PAYMENT

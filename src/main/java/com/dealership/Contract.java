@@ -1,6 +1,7 @@
 package com.dealership;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public abstract class Contract {
@@ -12,7 +13,7 @@ public abstract class Contract {
     private BigDecimal monthlyPayment;
 
     public Contract(String date, String name, String customerEmail, Vehicle vehicleSold) {
-        this.date = date;
+        this.date = LocalDate.now().toString();
         this.name = name;
         this.customerEmail = customerEmail;
         this.vehicleSold = vehicleSold;

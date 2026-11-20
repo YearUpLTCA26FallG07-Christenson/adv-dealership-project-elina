@@ -8,12 +8,20 @@ import java.util.Scanner;
 public class Console {
     private static final Scanner scanner = new Scanner(System.in);
 
-    public static String promptForString(String prompt) {
+    public static String promptForString(String prompt){
+        return promptForString(prompt, false);
+    }
+
+    public static String promptForString(String prompt, boolean optional) {
         System.out.print(prompt);
         return scanner.nextLine();
     }
 
-    public static int promptForInt(String prompt) {
+    public static int promptForInt(String prompt){
+        return promptForInt(prompt, false, 0);
+    }
+
+    public static int promptForInt(String prompt, boolean optional, int defaultValue) {
         String input = "";
         while (true) {
             System.out.print(prompt);
@@ -21,7 +29,7 @@ public class Console {
 
             // if input is not empty convert to integer
             if (input.isEmpty()) { // If input empty
-                return 0;
+                return defaultValue;
             }
             try {
                 return Integer.parseInt(input);
