@@ -191,7 +191,6 @@ public class UserInterface {
         String date = String.valueOf(LocalDate.now().getDayOfYear());
         String name = processPromptForString("› Enter your name: ");
         String email = processPromptForString("› Enter your email: ");
-        boolean isFinanced = processPromptForFinancing(); // Do you want to finance a purchase?
         // Create lease contract
         LeaseContract contract = new LeaseContract(date, name, email, foundVehicle);
         confirmContract(dealership, contract, vin);

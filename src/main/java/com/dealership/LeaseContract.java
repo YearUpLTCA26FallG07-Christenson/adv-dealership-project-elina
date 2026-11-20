@@ -13,8 +13,9 @@ public class LeaseContract extends Contract {
         this.expectedEndingValue = vehicleSold.getPrice() // 50% of the original price
                 .divide(BigDecimal.valueOf(2.00))
                 .setScale(2, RoundingMode.HALF_UP);
-        this.leaseFee = vehicleSold.getPrice()
-                .multiply(BigDecimal.valueOf(0.07)); // 7% of the original price
+        this.leaseFee = vehicleSold.getPrice() // 7% of the original price
+                .multiply(BigDecimal.valueOf(0.07))
+                .setScale(2, RoundingMode.HALF_UP);
         this.leasePercent = BigDecimal.valueOf(0.04); // All leases are financed at 4.0% for 36 months
     }
 
@@ -46,17 +47,19 @@ public class LeaseContract extends Contract {
     public BigDecimal getTotalPrice() {
         // Total price of a lease = Expected Ending Value + Lease Fee
         return getExpectedEndingValue()
-                .add(getLeaseFee());
+                .add(getLeaseFee()
+                        .setScale(2, RoundingMode.HALF_UP));
     }
 
     @Override
     public BigDecimal getMonthlyPayment() {
         // Monthly payment = (lease percent * total price * years + total price) / 36
         return leasePercent
-                .multiply(getVehicleSold().getPrice())
+                .multiply(getTotalPrice())
                 .multiply(BigDecimal.valueOf(3)) // All leases are financed at 4.0% for 36 months = 3 years
-        .add (getVehicleSold().getPrice())
-                .divide(BigDecimal.valueOf(36));
+                .add(getTotalPrice())
+                .divide(BigDecimal.valueOf(36))
+                .setScale(2,RoundingMode.HALF_UP);
     }
 
 
@@ -70,9 +73,9 @@ public class LeaseContract extends Contract {
                 "\nBase price: $" + getVehicleSold().getPrice() +
                 "\nResidual price after paying off: $" + getExpectedEndingValue() +
                 "\nLease fee: $" + getLeaseFee() +
-                "\nLease percent: " + getLeasePercent() + "%" +
+                "\nLease percent: " + getLeasePercent().multiply(BigDecimal.valueOf(100)) + "%" +
                 "\n-----------------------------------------------------------------" +
-                "\nTotal price: " + getTotalPrice() +
+                "\nTotal price: $" + getTotalPrice() +
                 "\nYou will pay: $" + getMonthlyPayment() + "/month for 36 months";
     }
 
